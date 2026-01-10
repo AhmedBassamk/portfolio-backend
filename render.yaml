@@ -1,26 +1,26 @@
 services:
   - type: web
-    name: portfolio-backend
+    name: portfolio-backend-app
     runtime: docker
     plan: free
     envVars:
       - key: APP_NAME
-        value: Portfolio
+        value: "Portfolio"
       - key: APP_ENV
-        value: production
+        value: "production"
       - key: APP_DEBUG
-        value: false
+        value: "false"
       - key: APP_KEY
         generateValue: true
       - key: DB_CONNECTION
-        value: sqlite
+        value: "sqlite"
       - key: SESSION_DRIVER
-        value: file
+        value: "file"
       - key: CACHE_STORE
-        value: file
+        value: "file"
       - key: QUEUE_CONNECTION
-        value: sync
+        value: "sync"
       - key: LOG_CHANNEL
-        value: stack
+        value: "stack"
       - key: LOG_LEVEL
-        value: error
+        value: "error"
