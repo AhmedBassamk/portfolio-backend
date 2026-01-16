@@ -23,6 +23,17 @@ ls -la /var/www/html/database
 echo "Running migrations..."
 php artisan migrate --force
 
+# IMPORTANT: Clear config cache to ensure APP_DEBUG and DB settings are fresh
+echo "Clearing config and cache..."
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+
+# Debugging: Check APP_DEBUG status
+echo "Checking APP_DEBUG status..."
+php -r "echo 'APP_DEBUG in PHP: ' . (getenv('APP_DEBUG') ?: 'not set') . PHP_EOL;"
+
 echo "--- Entrypoint Script Finished ---"
 
 # Execute the original CMD
