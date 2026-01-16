@@ -6,7 +6,7 @@ public/storage
 storage/*.key
 .editorconfig
 render.yaml
-Dockerfile
-docker-entrypoint.sh
+# Dockerfile
+# docker-entrypoint.sh
 phpunit.xml
 tests
