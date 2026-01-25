@@ -5,10 +5,12 @@ echo "--- Starting Entrypoint Script ---"
 echo "Current User: $(whoami)"
 echo "Current Directory: $(pwd)"
 
-# Create database file if it doesn't exist
-if [ ! -f /var/www/html/database/database.sqlite ]; then
-    echo "Creating database file..."
-    touch /var/www/html/database/database.sqlite
+# Create database file if it doesn't exist and using sqlite
+if [ "$DB_CONNECTION" = "sqlite" ] || [ -z "$DB_CONNECTION" ]; then
+    if [ ! -f /var/www/html/database/database.sqlite ]; then
+        echo "Creating database file..."
+        touch /var/www/html/database/database.sqlite
+    fi
 fi
 
 # Set permissions for the database directory and file
