@@ -1,42 +1,41 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 echo "--- Starting Entrypoint Script ---"
-echo "Current User: $(whoami)"
-echo "Current Directory: $(pwd)"
 
-# Create database file if it doesn't exist and using sqlite
-if [ "$DB_CONNECTION" = "sqlite" ] || [ -z "$DB_CONNECTION" ]; then
-    if [ ! -f /var/www/html/database/database.sqlite ]; then
-        echo "Creating database file..."
-        touch /var/www/html/database/database.sqlite
-    fi
+# Force disable problematic MPM modules
+a2dismod mpm_event mpm_worker 2>/dev/null || true
+
+# Create SQLite database
+if [ ! -f /var/www/html/database/database.sqlite ]; then
+    echo "Creating SQLite database..."
+    touch /var/www/html/database/database.sqlite
+    chmod 664 /var/www/html/database/database.sqlite
 fi
 
-# Set permissions for the database directory and file
-echo "Setting permissions for database..."
+# Set permissions
+echo "Setting permissions..."
+chown -R www-data:www-data /var/www/html/storage
+chown -R www-data:www-data /var/www/html/bootstrap/cache
 chown -R www-data:www-data /var/www/html/database
-chmod -R 775 /var/www/html/database
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
-# Diagnostic: List database folder
-ls -la /var/www/html/database
-
-# Run migrations
-echo "Running migrations..."
-php artisan migrate --force
-
-# IMPORTANT: Clear config cache to ensure APP_DEBUG and DB settings are fresh
-echo "Clearing config and cache..."
+# Clear and cache configs
+echo "Clearing cache..."
 php artisan config:clear
 php artisan cache:clear
 php artisan route:clear
 php artisan view:clear
 
-# Debugging: Check APP_DEBUG status
-echo "Checking APP_DEBUG status..."
-php -r "echo 'APP_DEBUG in PHP: ' . (getenv('APP_DEBUG') ?: 'not set') . PHP_EOL;"
+echo "Caching configs..."
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Run migrations
+echo "Running migrations..."
+php artisan migrate --force --seed
 
 echo "--- Entrypoint Script Finished ---"
 
-# Execute the original CMD
 exec "$@"

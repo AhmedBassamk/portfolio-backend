@@ -20,8 +20,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd intl zip
 
 # Handle Apache MPM conflicts (Fix for Railway/Docker/Apache startup error)
-RUN a2dismod mpm_event mpm_worker && a2enmod mpm_prefork rewrite
-
+RUN a2dismod mpm_event mpm_worker mpm_prefork 2>/dev/null || true && \
+    a2enmod mpm_prefork && \
+    a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
