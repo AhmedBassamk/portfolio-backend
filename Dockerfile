@@ -19,8 +19,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd intl zip
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Handle Apache MPM conflicts (Fix for Railway/Docker/Apache startup error)
+RUN a2dismod mpm_event mpm_worker && a2enmod mpm_prefork rewrite
 
 # Set working directory
 WORKDIR /var/www/html
